@@ -5,7 +5,7 @@ function initSocket(server) {
   const io = new Server(server, {
 
     cors: {
-      origin: "https://nearby-crxc.vercel.app",
+      origin: "https://nearby-vcri.vercel.app",
       methods: ["GET", "POST"]
     }
 
