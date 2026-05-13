@@ -1,51 +1,81 @@
-const User = require("../models/User");
+const User =
+require("../models/User");
 
-const bcrypt = require("bcryptjs");
-
-const jwt = require("jsonwebtoken");
+const jwt =
+require("jsonwebtoken");
 
 
 // ADMIN LOGIN
 
+const adminLogin =
+async (req, res) => {
 
-const adminLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+
+    const {
+      email,
+      password
+    } = req.body;
 
     if (
+
       email !== process.env.ADMIN_EMAIL ||
+
       password !== process.env.ADMIN_PASSWORD
+
     ) {
+
       return res.status(400).json({
-        message: "Wrong admin credentials"
+        message:
+        "Wrong admin credentials"
       });
+
     }
 
-    const token = jwt.sign(
-      { role: "admin" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token =
+      jwt.sign(
+
+        {
+          role: "admin",
+          email
+        },
+
+        process.env.JWT_SECRET,
+
+        {
+          expiresIn: "7d"
+        }
+
+      );
 
     res.json({
+
       token,
+
       admin: {
+
         email,
         role: "admin"
+
       }
+
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-module.exports = { adminLogin };
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+};
 
 
 // DASHBOARD
 
-const getDashboard = async (req, res) => {
+const getDashboard =
+async (req, res) => {
 
   try {
 
@@ -54,13 +84,13 @@ const getDashboard = async (req, res) => {
 
     const activeUsers =
       users.filter(
-        (u) => u.isOnline === true
+        (u) => u.isOnline
       ).length;
 
     res.json({
 
       totalUsers:
-        users.length,
+      users.length,
 
       activeUsers,
 
@@ -78,10 +108,10 @@ const getDashboard = async (req, res) => {
 
 };
 
+
 module.exports = {
 
   adminLogin,
-
   getDashboard
 
 };

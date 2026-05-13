@@ -1,49 +1,82 @@
 const express = require("express");
+
 const cors = require("cors");
 
 require("dotenv").config();
 
 const app = express();
 
-// ✅ FRONTEND URL ALLOW
 app.use(
+
   cors({
-    origin: "https://nearby-vcri.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+
+    origin:
+    "https://nearby-vcri.vercel.app",
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+
     credentials: true,
+
   })
+
 );
 
 app.use(express.json());
 
+
 // ROUTES
+
 const authRoutes =
-  require("./src/Routes/authRoutes");
+require("./src/routes/authRoutes");
 
 const userRoutes =
-  require("./src/Routes/userRoutes");
+require("./src/routes/userRoutes");
 
 const chatRoutes =
-  require("./src/Routes/chatRoutes");
+require("./src/routes/chatRoutes");
 
 const adminRoutes =
-  require("./src/Routes/adminRoutes");
+require("./src/routes/adminRoutes");
 
 const shoutoutRoutes =
-  require("./src/Routes/shoutoutRoutes");
+require("./src/routes/shoutoutRoutes");
+
 
 // API ROUTES
-app.use("/api/auth", authRoutes);
 
-app.use("/api/users", userRoutes);
+app.use(
+  "/api/auth",
+  authRoutes
+);
 
-app.use("/api/chat", chatRoutes);
+app.use(
+  "/api/users",
+  userRoutes
+);
 
-app.use("/api/admin", adminRoutes);
+app.use(
+  "/api/chat",
+  chatRoutes
+);
 
-app.use("/api/shoutouts", shoutoutRoutes);
+app.use(
+  "/api/admin",
+  adminRoutes
+);
+
+app.use(
+  "/api/shoutouts",
+  shoutoutRoutes
+);
+
 
 // TEST ROUTE
+
 app.get("/", (req, res) => {
 
   res.send("API Running");
