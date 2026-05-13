@@ -32,19 +32,19 @@ app.use(express.json());
 // ROUTES
 
 const authRoutes =
-require("./src/routes/authRoutes");
+require("./src/Routes/authRoutes");
 
 const userRoutes =
-require("./src/routes/userRoutes");
+require("./src/Routes/userRoutes");
 
 const chatRoutes =
-require("./src/routes/chatRoutes");
+require("./src/Routes/chatRoutes");
 
 const adminRoutes =
-require("./src/routes/adminRoutes");
+require("./src/Routes/adminRoutes");
 
 const shoutoutRoutes =
-require("./src/routes/shoutoutRoutes");
+require("./src/Routes/shoutoutRoutes");
 
 
 // API ROUTES
