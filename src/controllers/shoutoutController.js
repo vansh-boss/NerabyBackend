@@ -1,7 +1,8 @@
-// controllers/shoutoutController.js
-
 const Shoutout =
 require("../models/Shoutout");
+
+const User =
+require("../models/User");
 
 
 // ==========================
@@ -19,11 +20,10 @@ async (req, res) => {
       timing
     } = req.body;
 
-    // CREATE
     const shoutout =
       await Shoutout.create({
 
-        user: req.user.id,
+        user: req.user._id,
 
         message,
 
@@ -33,16 +33,14 @@ async (req, res) => {
 
       });
 
-    // POPULATE USER
     const populated =
       await Shoutout.findById(
         shoutout._id
       ).populate(
         "user",
-        "name email"
+        "name email bio"
       );
 
-    // SOCKET
     const io =
       req.app.get("io");
 
@@ -69,7 +67,7 @@ async (req, res) => {
 
 
 // ==========================
-// GET ALL SHOUTOUTS
+// GET SHOUTOUTS
 // ==========================
 
 exports.getShoutouts =
@@ -78,12 +76,59 @@ async (req, res) => {
   try {
 
     const {
-      interest
+      interest,
+      lat,
+      lng,
+      radius
     } = req.query;
 
-    let query = {};
+    let userFilter = {};
 
-    // FILTER
+    // LOCATION FILTER
+    if (lat && lng) {
+
+      userFilter.location = {
+
+        $near: {
+
+          $geometry: {
+
+            type: "Point",
+
+            coordinates: [
+              Number(lng),
+              Number(lat)
+            ]
+
+          },
+
+          $maxDistance:
+            Number(radius || 2) * 1000
+
+        }
+
+      };
+
+    }
+
+    const nearbyUsers =
+      await User.find(userFilter)
+      .select("_id");
+
+    const userIds =
+      nearbyUsers.map(
+        (u) => u._id
+      );
+
+    let query = {
+
+      user: {
+        $in: userIds
+      }
+
+    };
+
+    // INTEREST FILTER
     if (
       interest &&
       interest !== "all"
@@ -91,9 +136,9 @@ async (req, res) => {
 
       query.interest =
         interest;
+
     }
 
-    // GET DATA
     const shoutouts =
       await Shoutout.find(query)
 

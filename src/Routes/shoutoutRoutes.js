@@ -1,36 +1,27 @@
-const express =
-require("express");
+const express = require("express");
 
-const router =
-express.Router();
+const router = express.Router();
 
 const {
-
   createShoutout,
-
   getShoutouts
+} = require("../controllers/shoutoutController");
 
-} = require(
-  "../controllers/shoutoutController"
-);
-
-const authMiddleware =
+const protect =
 require("../middleware/authMiddleware");
 
 
-// GET
-
+// GET SHOUTOUTS
 router.get(
   "/",
   getShoutouts
 );
 
 
-// CREATE
-
+// CREATE SHOUTOUT
 router.post(
   "/",
-  authMiddleware,
+  protect,
   createShoutout
 );
 

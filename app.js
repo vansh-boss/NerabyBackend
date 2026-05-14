@@ -10,10 +10,13 @@ app.use(
 
   cors({
 
-    origin:
+    origin:[
+    
     "https://nearby-vcri.vercel.app",
+     "http://localhost:5173"
 
-    methods: [
+   ] ,
+   methods: [
       "GET",
       "POST",
       "PUT",
