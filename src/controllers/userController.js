@@ -1,33 +1,87 @@
 const User = require("../models/User");
 
 
+// ==========================
 // UPDATE LOCATION
+// ==========================
 
-exports.updateLocation = async (req, res) => { try { const { lat, lng } = req.body; await User.findByIdAndUpdate( req.user._id, { location: { type: "Point", coordinates: [ Number(lng), Number(lat) ] } } ); res.json({ message: "Location updated" }); } catch (err) { res.status(500).json({ message: err.message }); } };
+exports.updateLocation = async (req, res) => {
+
+  try {
+
+    const { lat, lng } = req.body;
+
+    await User.findByIdAndUpdate(
+
+      req.user._id,
+
+      {
+
+        location: {
+
+          type: "Point",
+
+          coordinates: [
+            Number(lng),
+            Number(lat)
+          ]
+
+        }
+
+      }
+
+    );
+
+    res.json({
+
+      message: "Location updated"
+
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+
+      message: err.message
+
+    });
+
+  }
+
+};
 
 
+// ==========================
 // NEARBY USERS
+// ==========================
 
-const nearbyUsers = async (
-  req,
-  res
-) => {
+exports.nearbyUsers = async (req, res) => {
 
   try {
 
     const {
       lat,
-      lng
+      lng,
+      radius
     } = req.query;
 
     const users =
-      await User.find({
+      await User.aggregate([
 
-        location: {
+        // ❌ CURRENT USER HIDE
+        {
+          $match: {
+            _id: {
+              $ne: req.user._id
+            }
+          }
+        },
 
-          $near: {
+        // ✅ GEO SEARCH
+        {
+          $geoNear: {
 
-            $geometry: {
+            near: {
 
               type: "Point",
 
@@ -38,17 +92,43 @@ const nearbyUsers = async (
 
             },
 
-            $maxDistance: 2000
+            distanceField:
+              "distance",
+
+            maxDistance:
+              Number(radius || 2) * 1000,
+
+            spherical: true
+
+          }
+
+        },
+
+        // ✅ RETURN DATA
+        {
+          $project: {
+
+            name: 1,
+            email: 1,
+            bio: 1,
+            age: 1,
+            interests: 1,
+            isOnline: 1,
+
+            distanceKm: {
+
+              $divide: [
+                "$distance",
+                1000
+              ]
+
+            }
 
           }
 
         }
 
-      })
-
-      .select(
-        "name email bio age interests isOnline"
-      );
+      ]);
 
     res.json({
 
@@ -58,6 +138,8 @@ const nearbyUsers = async (
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
 
       message: error.message
@@ -69,12 +151,11 @@ const nearbyUsers = async (
 };
 
 
+// ==========================
 // LOGOUT
+// ==========================
 
-const logoutUser = async (
-  req,
-  res
-) => {
+exports.logoutUser = async (req, res) => {
 
   try {
 
@@ -83,32 +164,27 @@ const logoutUser = async (
       req.user.id,
 
       {
+
         isOnline: false
+
       }
 
     );
 
     res.json({
+
       message: "Logout success"
+
     });
 
   } catch (error) {
 
     res.status(500).json({
+
       message: error.message
+
     });
 
   }
-
-};
-
-
-module.exports = {
-
-  updateLocation,
-
-  nearbyUsers,
-
-  logoutUser
 
 };
