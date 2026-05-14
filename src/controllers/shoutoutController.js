@@ -34,21 +34,23 @@ async (req, res) => {
       });
 
     const populated =
-      await Shoutout.findById(
-        shoutout._id
-      ).populate(
-        "user",
-        "name email bio"
-      );
-
-    const io =
-      req.app.get("io");
-
-    io.emit(
-      "new_shoutout",
-      populated
+    await shoutout.populate(
+      "user",
+      "name email bio"
     );
 
+    // ✅ SOCKET SAFE CHECK
+    const io =
+req.app.get("io");
+
+if (io) {
+
+  io.emit(
+    "new_shoutout",
+    populated
+  );
+
+}
     res.status(201).json({
       shoutout: populated
     });

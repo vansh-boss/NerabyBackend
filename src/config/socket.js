@@ -1,34 +1,57 @@
-const { Server } = require("socket.io");
+const { Server } =
+require("socket.io");
 
-function initSocket(server) {
+const initSocket = (server) => {
 
-  const io = new Server(server, {
+  const io =
+    new Server(server, {
 
-    cors: {
-      origin: "https://nearby-vcri.vercel.app",
-      methods: ["GET", "POST"]
-    }
+      cors: {
 
-  });
+        origin: [
+
+          "http://localhost:5173",
+
+          "https://nearby-vcri.vercel.app"
+
+        ],
+
+        methods: [
+          "GET",
+          "POST"
+        ],
+
+        credentials: true
+
+      }
+
+    });
 
   io.on("connection", (socket) => {
 
-    console.log("User Connected:", socket.id);
+    console.log(
+      "User Connected:",
+      socket.id
+    );
 
-    socket.on("join_chat", (chatId) => {
-      socket.join(chatId);
-    });
+    socket.on(
+      "disconnect",
+      () => {
 
-    socket.on("send_message", (data) => {
-      io.to(data.chatId).emit("receive_message", data);
-    });
+        console.log(
+          "User Disconnected:",
+          socket.id
+        );
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
-    });
+      }
+    );
 
   });
 
-}
+  return io;
 
-module.exports = initSocket;
+};
+
+module.exports = {
+  initSocket
+};

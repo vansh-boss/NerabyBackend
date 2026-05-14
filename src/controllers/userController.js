@@ -3,49 +3,7 @@ const User = require("../models/User");
 
 // UPDATE LOCATION
 
-const updateLocation = async (
-  req,
-  res
-) => {
-
-  try {
-
-    const {
-      userId,
-      latitude,
-      longitude
-    } = req.body;
-
-    const user =
-      await User.findByIdAndUpdate(
-
-        userId,
-
-        {
-          location: {
-            type: "Point",
-            coordinates: [
-              Number(longitude),
-              Number(latitude)
-            ]
-          }
-        },
-
-        { new: true }
-
-      );
-
-    res.json(user);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
-  }
-
-};
+exports.updateLocation = async (req, res) => { try { const { lat, lng } = req.body; await User.findByIdAndUpdate( req.user._id, { location: { type: "Point", coordinates: [ Number(lng), Number(lat) ] } } ); res.json({ message: "Location updated" }); } catch (err) { res.status(500).json({ message: err.message }); } };
 
 
 // NEARBY USERS

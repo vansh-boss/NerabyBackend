@@ -38,34 +38,46 @@ new mongoose.Schema({
     type: String,
     default: "user"
   },
+
   phone: {
-  type: String,
-  default: ""
-},
+    type: String,
+    default: ""
+  },
 
   isOnline: {
     type: Boolean,
     default: false
   },
+
+  // ✅ LOCATION
   location: {
-  type: {
-    type: String,
-    enum: ["Point"],
-    default: "Point"
-  },
-  coordinates: {
-    type: [Number] // [lng, lat]
+
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point"
+    },
+
+    coordinates: {
+
+      type: [Number],
+
+      default: [77.2090, 28.6139]
+
+      // [lng, lat]
+
+    }
+
   }
-}
 
 },
+
 {
   timestamps: true
 });
 
 
-// GEO INDEX
-
+// ✅ GEO INDEX
 userSchema.index({
   location: "2dsphere"
 });

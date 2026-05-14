@@ -1,16 +1,33 @@
 const http = require("http");
+
 const app = require("./app");
-const connectDB = require("./src/config/db");
-const initSocket = require("./src/config/socket");
+
+const connectDB =
+require("./src/config/db");
+
+const {
+  initSocket
+} = require("./src/config/socket");
 
 connectDB();
 
-const server = http.createServer(app);
+const server =
+http.createServer(app);
 
+// SOCKET INIT
+const io =
 initSocket(server);
 
-const PORT = process.env.PORT || 5000;
+// APP ME SAVE
+app.set("io", io);
+
+const PORT =
+process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`Server Running On ${PORT}`);
+
+  console.log(
+    `Server Running On ${PORT}`
+  );
+
 });
