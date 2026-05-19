@@ -15,6 +15,7 @@ async function registerUser(req, res) {
     const {
       name,
       email,
+      phone,
       password,
       bio,
       age,
@@ -23,8 +24,7 @@ async function registerUser(req, res) {
       lng
     } = req.body;
 
-    const existingUser =
-      await User.findOne({ email });
+    const existingUser =await User.findOne({ email });
 
     if (existingUser) {
 
@@ -34,33 +34,25 @@ async function registerUser(req, res) {
 
     }
 
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
+    const hashedPassword =await bcrypt.hash(password, 10);
 
     const user = await User.create({
 
       name,
       email,
-
+      phone,
       password: hashedPassword,
-
       bio,
       age,
       interests,
-
       role: "user",
-
       isOnline: true,
-
       location: {
-
         type: "Point",
-
         coordinates: [
           lng || 0,
           lat || 0
         ]
-
       }
 
     });
@@ -76,11 +68,8 @@ async function registerUser(req, res) {
     );
 
     res.status(201).json({
-
       token,
-
       user: {
-
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -208,63 +197,9 @@ async function loginUser(req, res) {
 // LOGOUT
 
 async function logoutUser(req, res) {
-
-  try {
-
-    const user =
-      await User.findById(req.user.id);
-
-    if (user) {
-
-      user.isOnline = false;
-
-      await user.save();
-
-    }
-
-    res.json({
-      message: "Logout Success"
-    });
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
-  }
-
 }
 
 async function getUserById(req, res) {
-
-  try {
-
-    const user =
-      await User.findById(
-        req.params.id
-      );
-
-    if (!user) {
-
-      return res.status(404).json({
-        message: "User not found"
-      });
-
-    }
-
-    res.json({
-      user
-    });
-
-  } catch (err) {
-
-    res.status(500).json({
-      message: err.message
-    });
-
-  }
-
 }
 
 module.exports = {
@@ -272,6 +207,6 @@ module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-    getUserById
+  getUserById,
 
 };

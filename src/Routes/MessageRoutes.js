@@ -15,5 +15,15 @@ router.get("/:user1/:user2", async (req, res) => {
 
   res.json({ messages });
 });
+router.get("/:chatId", async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching chats:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
 
 module.exports = router;

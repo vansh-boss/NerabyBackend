@@ -1,10 +1,19 @@
-const express = require("express");
+const router = require("express").Router();
+const Message = require("../models/Message");
 
-const router = express.Router();
+// GET CHAT HISTORY
+router.get("/:user1/:user2", async (req, res) => {
 
-router.get("/:id", (req, res) => {
+  const { user1, user2 } = req.params;
 
-  res.json([]);
+  const messages = await Message.find({
+    $or: [
+      { senderId: user1, receiverId: user2 },
+      { senderId: user2, receiverId: user1 }
+    ]
+  }).sort({ createdAt: 1 });
+
+  res.json({ messages });
 
 });
 

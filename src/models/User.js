@@ -49,7 +49,6 @@ new mongoose.Schema({
     default: false
   },
 
-  // ✅ LOCATION
   location: {
 
     type: {
@@ -64,7 +63,7 @@ new mongoose.Schema({
 
       default: [77.2090, 28.6139]
 
-      // [lng, lat]
+      // [lon, lat]
 
     }
 
@@ -76,8 +75,6 @@ new mongoose.Schema({
   timestamps: true
 });
 
-
-// ✅ GEO INDEX
 userSchema.index({
   location: "2dsphere"
 });

@@ -1,122 +1,80 @@
 const User =
-require("../models/User");
+  require("../models/User");
 
 const jwt =
-require("jsonwebtoken");
+  require("jsonwebtoken");
 
 
 // =======================
 // ADMIN LOGIN
 // =======================
-
+const getAdmin = async (req, res) => {
+  const admin = req.user;
+  if (admin?.email && admin.role === "admin") {
+    return res.json({ admin });
+  }
+  return res.status(403).json({ message: "unauthorized" });
+}
 const adminLogin =
-async (req, res) => {
+  async (req, res) => {
 
-  try {
+    try {
+      const { email, password } = req.body;
+      console.log("ENV EMAIL:", process.env.ADMIN_EMAIL);
+      console.log("ENV PASSWORD:", process.env.ADMIN_PASSWORD);
+      console.log("FRONTEND EMAIL:", email);
+      console.log("FRONTEND PASSWORD:", password);
+      if (
+        email !== process.env.ADMIN_EMAIL ||
+        password !== process.env.ADMIN_PASSWORD
+      ) {
+        return res.status(400).json({
+          message: "Wrong admin credentials"
+        });
+      }
 
-    const {
-      email,
-      password
-    } = req.body;
+      const token =
+        jwt.sign(
 
+          {
 
-    // ✅ DEBUG LOGS
+            role: "admin",
 
-    console.log(
-      "ENV EMAIL:",
-      process.env.ADMIN_EMAIL
-    );
+            email
 
-    console.log(
-      "ENV PASSWORD:",
-      process.env.ADMIN_PASSWORD
-    );
+          },
 
-    console.log(
-      "FRONTEND EMAIL:",
-      email
-    );
+          process.env.JWT_SECRET,
 
-    console.log(
-      "FRONTEND PASSWORD:",
-      password
-    );
+          {
 
+            expiresIn: "7d"
 
-    // ✅ CHECK
+          }
 
-    if (
+        );
+      res.json({
+        token,
+        admin: {
+          email,
+          role: "admin"
+        }
+      });
 
-      email !== process.env.ADMIN_EMAIL ||
+    } catch (error) {
 
-      password !== process.env.ADMIN_PASSWORD
+      console.log(error);
 
-    ) {
-
-      return res.status(400).json({
+      res.status(500).json({
 
         message:
-        "Wrong admin credentials"
+          error.message
 
       });
 
     }
 
-
-    // ✅ TOKEN
-
-    const token =
-      jwt.sign(
-
-        {
-
-          role: "admin",
-
-          email
-
-        },
-
-        process.env.JWT_SECRET,
-
-        {
-
-          expiresIn: "7d"
-
-        }
-
-      );
-
-
-    // ✅ RESPONSE
-
-    res.json({
-
-      token,
-
-      admin: {
-
-        email,
-
-        role: "admin"
-
-      }
-
-    });
-
-  } catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-
-      message:
-      error.message
-
-    });
-
-  }
-
-};
+  };
 
 
 // =======================
@@ -124,51 +82,44 @@ async (req, res) => {
 // =======================
 
 const getDashboard =
-async (req, res) => {
+  async (req, res) => {
 
-  try {
+    try {
 
-    const users =
-      await User.find();
+      const users = await User.find();
 
-    const activeUsers =
-      users.filter(
+      const activeUsers = users.filter(
         (u) => u.isOnline
       ).length;
 
-    res.json({
+      res.json({
 
-      totalUsers:
-      users.length,
+        totalUsers:
+          users.length,
 
-      activeUsers,
+        activeUsers,
 
-      users
+        users
 
-    });
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    res.status(500).json({
+      res.status(500).json({
 
-      message:
-      error.message
+        message:
+          error.message
 
-    });
+      });
 
-  }
+    }
 
-};
-
-
-// =======================
-// EXPORT
-// =======================
+  };
 
 module.exports = {
 
   adminLogin,
-
-  getDashboard
+  getDashboard,
+  getAdmin
 
 };

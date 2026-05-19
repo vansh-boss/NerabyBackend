@@ -1,53 +1,45 @@
-// models/Shoutout.js
+const mongoose = require("mongoose");
 
-const mongoose =
-require("mongoose");
+const shoutoutSchema = new mongoose.Schema(
 
-const shoutoutSchema =
-new mongoose.Schema({
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
 
-  user: {
+    message: {
+      type: String,
+      required: true
+    },
 
-    type:
-      mongoose.Schema.Types.ObjectId,
+    interest: {
+      type: String,
+      required: true
+    },
 
-    ref: "User",
+    timing: {
+      type: String,
+      default: "now"
+    },
 
-    required: true
+    // ✅ IMPORTANT
+    radius: {
+      type: Number,
+      default: 2
+    }
 
   },
 
-  message: {
-
-    type: String,
-
-    required: true
-
-  },
-
-  interest: {
-
-    type: String,
-
-    required: true
-
-  },
-
-  timing: {
-
-    type: String,
-
-    default: "now"
-
+  {
+    timestamps: true
   }
 
-},
-{
-  timestamps: true
-});
+);
 
 module.exports =
-mongoose.model(
-  "Shoutout",
-  shoutoutSchema
-);
+  mongoose.model(
+    "Shoutout",
+    shoutoutSchema
+  );

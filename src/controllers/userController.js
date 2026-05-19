@@ -65,8 +65,7 @@ exports.nearbyUsers = async (req, res) => {
       radius
     } = req.query;
 
-    const users =
-      await User.aggregate([
+    const users = await User.aggregate([
 
         // ❌ CURRENT USER HIDE
         {
