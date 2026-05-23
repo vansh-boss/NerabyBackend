@@ -32,6 +32,17 @@ const protect = async (
       process.env.JWT_SECRET
     );
 
+    if (decoded.role === "admin") {
+
+      req.user = {
+        role: "admin",
+        email: decoded.email
+      };
+
+      return next();
+
+    }
+
     const user =
       await User.findById(decoded.id);
 
